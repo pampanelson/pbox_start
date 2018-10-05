@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "../../node_modules/webpack-dev-server/bin/webpack-dev-server.js --mode development --open",
+    "start_local": "../../node_modules/webpack-dev-server/bin/webpack-dev-server.js --host 0.0.0.0 --mode development --open",
     "dev":"../../node_modules/webpack/bin/webpack.js --mode development",
     "build":"../../node_modules/webpack/bin/webpack.js --mode production"
   },
