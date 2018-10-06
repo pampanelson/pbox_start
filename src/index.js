@@ -1,31 +1,34 @@
-console.log("hello world hi there");
+import screenfull from 'screenfull';
+// console.log(screenfull);
 
-
-window.onload = function() {
-
-    var toogleScreen = false;
+function init() {
+    // init info div for debub
     var infoDiv = document.createElement('DIV');
     var infoText = "info div: ";
+    infoText += " width : " + window.innerWidth;
+    infoText += " height : " + window.innerHeight;
+    infoText += " DPI : ";
     var infoNode = document.createTextNode(infoText);
+
 
     infoDiv.appendChild(infoNode);
 
-    var btn = document.createElement("BUTTON");
-    btn.innerHTML = "btn";
-    btn.addEventListener('click', function() {
-        toogleScreen = !toogleScreen;
-        if (toogleScreen) {
-            screenfull.exit();
-        } else {
-            screenfull.request();
-
-        }
-
-    })
-
     document.body.appendChild(infoDiv);
+
+    // init screen full toggle button
+    var btn = document.createElement('BUTTON');
+    btn.innerHTML = "[sreen full]";
+    btn.style.position = 'absolute';
+    btn.style.left = '0px';
+    btn.style.top = '0px';
+    btn.addEventListener('click', function() {
+        // screenfull.request();
+        screenfull.toggle();
+    });
+
     document.body.appendChild(btn);
 
-
-
+}
+window.onload = function() {
+    init();
 }();
