@@ -72,7 +72,7 @@ window.onload = function() {
     controls.update();
 
     // and a cube for test
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const geometry = new THREE.BoxGeometry(0.1, 0.1, 1);
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     const cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
@@ -80,11 +80,12 @@ window.onload = function() {
     // prepare video texture for plane
     const video = document.getElementById('video');
     const texture = new THREE.VideoTexture(video);
+
     texture.minFilter = THREE.LinearFilter;
     texture.magFilter = THREE.LinearFilter;
     texture.format = THREE.RGBFormat;
 
-    const planeGeometry = new THREE.PlaneGeometry(20, 20, 10, 1);
+    const planeGeometry = new THREE.PlaneGeometry(10, 10, 1, 1);
     const glsl_material = new THREE.RawShaderMaterial({
         uniforms: {
             time: { value: 1.0 },
@@ -100,6 +101,8 @@ window.onload = function() {
     camera.position.z = 5;
 
     function update() {
+    	planeGeometry.vertices[0].y = Math.sin(new Date());
+    	planeGeometry.verticesNeedUpdate = true;
         glsl_material.uniforms.time.value = Math.sin(new Date());
         texture.needsUpdate = true;
 
