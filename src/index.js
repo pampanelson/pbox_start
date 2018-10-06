@@ -4,6 +4,12 @@ import screenfull from 'screenfull';
 function init() {
     // init info div for debub
     var infoDiv = document.createElement('DIV');
+    infoDiv.style.position = 'absolute';
+    infoDiv.style.left = '0px';
+    infoDiv.style.top = '20px';
+    infoDiv.style.width = '100%';
+    infoDiv.style.zIndex = '100';
+
     var infoText = "info div: ";
     infoText += " width : " + window.innerWidth;
     infoText += " height : " + window.innerHeight;
