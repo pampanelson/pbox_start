@@ -1,5 +1,14 @@
 import screenfull from 'screenfull';
 // console.log(screenfull);
+import * as THREE from 'three';
+// console.log(THREE);
+
+// trick to import other modules and merge to  THREE
+
+window.THREE = THREE;
+
+require('three/examples/js/controls/OrbitControls.js');
+
 
 function init() {
     // init info div for debub
@@ -35,6 +44,67 @@ function init() {
     document.body.appendChild(btn);
 
 }
+
 window.onload = function() {
     init();
+
+    const resize = function() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    window.onresize = resize;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+    //controls.update() must be called after any manual changes to the camera's transform
+    camera.position.set(0, 20, 100);
+    controls.update();
+
+    // and a cube for test
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+
+
+
+    const planeGeometry = new THREE.PlaneGeometry(100, 100, 10, 1);
+    const glsl_material = new THREE.RawShaderMaterial({
+        uniforms: {
+            time: { value: 1.0 }
+        },
+        vertexShader: document.getElementById('vertexShader').textContent,
+        fragmentShader: document.getElementById('fragmentShader').textContent,
+    });
+
+    const plane = new THREE.Mesh(planeGeometry, glsl_material);
+    scene.add(plane);
+
+    camera.position.z = 5;
+
+    function render() {
+
+    };
+    const animate = function() {
+        requestAnimationFrame(animate);
+        render();
+        controls.update();
+
+        renderer.render(scene, camera);
+    };
+
+    animate();
 }();

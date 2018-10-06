@@ -4,10 +4,66 @@
 <head>
     <title>PBOX</title>
     <meta name="viewport" content="width=device-width, user-scalable=no">
-
+    <style type="text/css">
+    	html,body{
+    		top:0;
+    		left: 0;
+    		margin: 0;
+    	}
+    </style>
 </head>
 
 <body>
+    <script id="vertexShader" type="x-shader/x-vertex">
+        // Sets precision for float and int types
+			precision mediump float;
+			precision mediump int;
+      
+			uniform mat4 modelViewMatrix; // optional
+			uniform mat4 projectionMatrix; // optional
+      
+			attribute vec3 position;
+			attribute vec4 color;
+      
+      // Passed to fragment shader
+			varying vec3 vPosition;
+			varying vec4 vColor;
+      
+			void main()	{
+      	// Assign varyings for fragment shader
+				vPosition = position;
+				vColor = color;
+        
+        // some kind of boilerplate to set clipcoords
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+			}
+		</script>
+    <!-- Fragment shader
+      Built-in input variables: 
+        in vec4 gl_FragCoord;
+        in bool gl_FrontFacing;
+        in vec2 gl_PointCoord;
+      
+    -->
+    <script id="fragmentShader" type="x-shader/x-fragment">
+        precision mediump float;
+			precision mediump int;
+      
+			uniform float time;
+      
+			varying vec3 vPosition;
+			varying vec4 vColor;
+      
+			void main()	{
+      	// Grab vertex color
+				vec4 color = vec4( vColor );
+        // Alter red channel 
+				color.r += sin( vPosition.x * 10.0 + time ) * 0.5;
+        
+        // Set fragment color
+				gl_FragColor = color;
+			}
+		</script>
 </body>
 
 </html>
