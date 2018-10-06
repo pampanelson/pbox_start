@@ -8,6 +8,8 @@ window.THREE = THREE;
 
 require('three/examples/js/controls/OrbitControls.js');
 
+// const vertex = require("shaders/vertex.glsl");
+// const frag = require("shaders/frag.glsl");
 
 function init() {
     // init info div for debub
@@ -85,12 +87,16 @@ window.onload = function() {
     texture.magFilter = THREE.LinearFilter;
     texture.format = THREE.RGBFormat;
 
-    const planeGeometry = new THREE.PlaneGeometry(10, 10, 1, 1);
+    const planeGeometry = new THREE.PlaneGeometry(2,2);
+    // const planeGeometry = new THREE.PlaneBufferGeometry(2,2); // TODO
     const glsl_material = new THREE.RawShaderMaterial({
         uniforms: {
-            time: { value: 1.0 },
+            time: { type:"f",value: 1.0 },
             texture0:{value:texture}
         },
+        // vertexShader:vertex,
+        // fragmentShader:frag
+
         vertexShader: document.getElementById('vertexShader').textContent,
         fragmentShader: document.getElementById('fragmentShader').textContent,
     });
@@ -101,8 +107,8 @@ window.onload = function() {
     camera.position.z = 5;
 
     function update() {
-    	planeGeometry.vertices[0].y = Math.sin(new Date());
-    	planeGeometry.verticesNeedUpdate = true;
+    	// planeGeometry.vertices[0].y = Math.sin(new Date());
+    	// planeGeometry.verticesNeedUpdate = true;
         glsl_material.uniforms.time.value = Math.sin(new Date());
         texture.needsUpdate = true;
 
