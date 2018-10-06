@@ -5,15 +5,19 @@
     <title>PBOX</title>
     <meta name="viewport" content="width=device-width, user-scalable=no">
     <style type="text/css">
-    	html,body{
-    		top:0;
-    		left: 0;
-    		margin: 0;
-    	}
+    html,
+    body {
+        top: 0;
+        left: 0;
+        margin: 0;
+    }
     </style>
 </head>
 
 <body>
+    <video id="video" autoplay loop crossOrigin="anonymous" webkit-playsinline style="display:none">
+        <source src="static/sintel_1080p.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+    </video>
     <script id="vertexShader" type="x-shader/x-vertex">
         // Sets precision for float and int types
 			precision mediump float;
@@ -51,15 +55,20 @@
       
 			uniform float time;
       
+      		varying vec2 vUv;
+			uniform sampler2D texture0;
+
 			varying vec3 vPosition;
 			varying vec4 vColor;
       
 			void main()	{
       	// Grab vertex color
-				vec4 color = vec4( vColor );
+				//vec4 color = vec4( vColor );
         // Alter red channel 
-				color.r += sin( vPosition.x * 10.0 + time ) * 0.5;
+				//color.r += sin( vPosition.x * 10.0 + time ) * 0.5;
         
+            	vec4 color = texture2D( texture0 , vPosition.xy );
+
         // Set fragment color
 				gl_FragColor = color;
 			}

@@ -4,7 +4,6 @@ import * as THREE from 'three';
 // console.log(THREE);
 
 // trick to import other modules and merge to  THREE
-
 window.THREE = THREE;
 
 require('three/examples/js/controls/OrbitControls.js');
@@ -78,13 +77,18 @@ window.onload = function() {
     const cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
 
+    // prepare video texture for plane
+    const video = document.getElementById('video');
+    const texture = new THREE.VideoTexture(video);
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    texture.format = THREE.RGBFormat;
 
-
-
-    const planeGeometry = new THREE.PlaneGeometry(100, 100, 10, 1);
+    const planeGeometry = new THREE.PlaneGeometry(20, 20, 10, 1);
     const glsl_material = new THREE.RawShaderMaterial({
         uniforms: {
-            time: { value: 1.0 }
+            time: { value: 1.0 },
+            texture0:{value:texture}
         },
         vertexShader: document.getElementById('vertexShader').textContent,
         fragmentShader: document.getElementById('fragmentShader').textContent,
@@ -95,12 +99,14 @@ window.onload = function() {
 
     camera.position.z = 5;
 
-    function render() {
+    function update() {
+        glsl_material.uniforms.time.value = Math.sin(new Date());
+        texture.needsUpdate = true;
 
     };
     const animate = function() {
         requestAnimationFrame(animate);
-        render();
+        update();
         controls.update();
 
         renderer.render(scene, camera);
