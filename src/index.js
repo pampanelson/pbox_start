@@ -1,36 +1,36 @@
-import screenfull from 'screenfull';
+import screenfull from "screenfull";
 // console.log(screenfull);
-import * as THREE from 'three';
+import * as THREE from "three";
 // console.log(THREE);
 
 // trick to import other modules and merge to  THREE
 window.THREE = THREE;
 
-require('three/examples/js/controls/OrbitControls.js');
+require("three/examples/js/controls/OrbitControls.js");
 
-var glsl = require('glslify');
-var vertexContent = require('./shaders/vertex.glsl');
+var glsl = require("glslify");
+var vertexContent = require("./shaders/vertex.glsl");
 var vertex = glsl(vertexContent);
 
-var fragContent = require('./shaders/frag.glsl');
+var fragContent = require("./shaders/frag.glsl");
 var frag = glsl(fragContent);
 
 // why import and const not working ? TODO ================
-// import * as glsl from 'glslify';
-// const vertexContent = require('./shaders/vertex.glsl');
+// import * as glsl from "glslify";
+// const vertexContent = require("./shaders/vertex.glsl");
 // const vertex = glsl(vertexContent);
 
-// const fragContent = require('./shaders/frag.glsl');
+// const fragContent = require("./shaders/frag.glsl");
 // const frag = glsl(fragContent);
 
 function init() {
     // init info div for debub
-    var infoDiv = document.createElement('DIV');
-    infoDiv.style.position = 'absolute';
-    infoDiv.style.left = '0px';
-    infoDiv.style.top = '20px';
-    infoDiv.style.width = '100%';
-    infoDiv.style.zIndex = '100';
+    var infoDiv = document.createElement("DIV");
+    infoDiv.style.position = "absolute";
+    infoDiv.style.left = "0px";
+    infoDiv.style.top = "20px";
+    infoDiv.style.width = "100%";
+    infoDiv.style.zIndex = "100";
 
     var infoText = "info div: ";
     infoText += " width : " + window.innerWidth;
@@ -44,12 +44,12 @@ function init() {
     document.body.appendChild(infoDiv);
 
     // init screen full toggle button
-    var btn = document.createElement('BUTTON');
+    var btn = document.createElement("BUTTON");
     btn.innerHTML = "[sreen full]";
-    btn.style.position = 'absolute';
-    btn.style.left = '0px';
-    btn.style.top = '0px';
-    btn.addEventListener('click', function() {
+    btn.style.position = "absolute";
+    btn.style.left = "0px";
+    btn.style.top = "0px";
+    btn.addEventListener("click", function() {
         // screenfull.request();
         screenfull.toggle();
     });
@@ -81,7 +81,7 @@ window.onload = function() {
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-    //controls.update() must be called after any manual changes to the camera's transform
+    //controls.update() must be called after any manual changes to the camera"s transform
     camera.position.set(0, 20, 100);
     controls.update();
 
@@ -92,7 +92,7 @@ window.onload = function() {
     scene.add(cube);
 
     // prepare video texture for plane
-    const video = document.getElementById('video');
+    const video = document.getElementById("video");
     const texture = new THREE.VideoTexture(video);
 
     texture.minFilter = THREE.LinearFilter;
@@ -109,8 +109,8 @@ window.onload = function() {
         vertexShader: vertex,
         fragmentShader: frag
 
-        // vertexShader: document.getElementById('vertexShader').textContent,
-        // fragmentShader: document.getElementById('fragmentShader').textContent,
+        // vertexShader: document.getElementById("vertexShader").textContent,
+        // fragmentShader: document.getElementById("fragmentShader").textContent,
     });
 
     const plane = new THREE.Mesh(planeGeometry, glsl_material);
@@ -124,7 +124,8 @@ window.onload = function() {
         glsl_material.uniforms.time.value = Math.sin(new Date());
         texture.needsUpdate = true;
 
-    };
+    }
+
     const animate = function() {
         requestAnimationFrame(animate);
         update();

@@ -3,7 +3,7 @@ precision mediump int;
 
 uniform float time;
 
-	varying vec2 vUv;
+varying vec2 vUv;
 uniform sampler2D texture0;
 
 varying vec3 vPosition;

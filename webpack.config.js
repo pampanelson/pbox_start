@@ -1,7 +1,7 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
-const webpack = require('webpack');
-const path = require('path');
-const nodeModulesPath = path.resolve(__dirname, 'node_modules');
+const webpack = require("webpack");
+const path = require("path");
+const nodeModulesPath = path.resolve(__dirname, "node_modules");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 
 module.exports = {
@@ -42,7 +42,7 @@ module.exports = {
         ]
     },
 
-    devtool: 'inline-source-map',
+    devtool: "inline-source-map",
     // devtool: "cheap-source-map",
 
 
@@ -57,7 +57,7 @@ module.exports = {
 
 
     devServer: {
-        contentBase: require('path').join(__dirname, "dist"),
+        contentBase: require("path").join(__dirname, "dist"),
         compress: true,
         port: 8033,
         host: "127.0.0.1",
