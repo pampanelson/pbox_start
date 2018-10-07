@@ -6,6 +6,10 @@ import * as THREE from "three";
 // trick to import other modules and merge to  THREE
 window.THREE = THREE;
 
+import Stats from "three/examples/js/libs/stats.min.js"
+var stats = new Stats();
+
+
 require("three/examples/js/controls/OrbitControls.js");
 
 var glsl = require("glslify");
@@ -50,7 +54,7 @@ function init() {
     var btn = document.createElement("BUTTON");
     btn.innerHTML = "[sreen full]";
     btn.style.position = "absolute";
-    btn.style.left = "0px";
+    btn.style.right = "0px";
     btn.style.top = "0px";
     btn.addEventListener("click", function() {
         // screenfull.request();
@@ -58,6 +62,10 @@ function init() {
     });
 
     document.body.appendChild(btn);
+
+    stats.showPanel(0);
+    document.body.appendChild(stats.dom);
+
 
 }
 
@@ -137,7 +145,7 @@ window.onload = function() {
         }
 
     };
-    var planeGeometry1 = new THREE.PlaneBufferGeometry(2, 2);
+    var planeGeometry1 = new THREE.PlaneBufferGeometry(3.2, 1.8);
     var material1 = new THREE.ShaderMaterial({
         uniforms: uniforms1,
         vertexShader: vertex1,
@@ -172,10 +180,12 @@ window.onload = function() {
 
     const animate = function() {
         requestAnimationFrame(animate);
+        stats.begin();
         update();
         controls.update();
-
         renderer.render(scene, camera);
+        stats.end();
+
     };
 
     animate();
