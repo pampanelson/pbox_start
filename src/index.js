@@ -8,8 +8,63 @@ window.THREE = THREE;
 
 require('three/examples/js/controls/OrbitControls.js');
 
-// const vertex = require("shaders/vertex.glsl");
-// const frag = require("shaders/frag.glsl");
+var glsl = require('glslify');
+
+var vertexContent = require('./shaders/vertex.glsl');
+var vertex = glsl(vertexContent);
+
+
+var fragContent = require('./shaders/frag.glsl');
+var frag = glsl(fragContent);
+// var vertex = glsl(`        
+// 	// Sets precision for float and int types
+// 			precision mediump float;
+// 			precision mediump int;
+
+// 			uniform mat4 modelViewMatrix; // optional
+// 			uniform mat4 projectionMatrix; // optional
+
+// 			attribute vec3 position;
+// 			attribute vec4 color;
+
+//       // Passed to fragment shader
+// 			varying vec3 vPosition;
+// 			varying vec4 vColor;
+
+// 			void main()	{
+//       	// Assign varyings for fragment shader
+// 				vPosition = position;
+// 				vColor = color;
+
+//         // some kind of boilerplate to set clipcoords
+// 				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+// 			}
+// 		`);
+// var frag = glsl(`
+//         precision mediump float;
+// 		precision mediump int;
+
+// 		uniform float time;
+
+//       	varying vec2 vUv;
+// 		uniform sampler2D texture0;
+
+// 		varying vec3 vPosition;
+// 		varying vec4 vColor;
+
+// 		void main()	{
+//       	// Grab vertex color
+// 			//vec4 color = vec4( vColor );
+//         // Alter red channel 
+// 			//color.r += sin( vPosition.x * 10.0 + time ) * 0.5;
+
+//             vec4 color = texture2D( texture0 , vPosition.xy + vec2(.0,0.25));
+//             //vec4 color = texture2D( texture0 , gl_FragCoord.xy);
+//         // Set fragment color
+// 				gl_FragColor = color;
+// 		}
+
+// 	`);
 
 function init() {
     // init info div for debub
@@ -87,18 +142,18 @@ window.onload = function() {
     texture.magFilter = THREE.LinearFilter;
     texture.format = THREE.RGBFormat;
 
-    const planeGeometry = new THREE.PlaneGeometry(2,2);
+    const planeGeometry = new THREE.PlaneGeometry(2, 2);
     // const planeGeometry = new THREE.PlaneBufferGeometry(2,2); // TODO
     const glsl_material = new THREE.RawShaderMaterial({
         uniforms: {
-            time: { type:"f",value: 1.0 },
-            texture0:{value:texture}
+            time: { type: "f", value: 1.0 },
+            texture0: { value: texture }
         },
-        // vertexShader:vertex,
-        // fragmentShader:frag
+        vertexShader: vertex,
+        fragmentShader: frag
 
-        vertexShader: document.getElementById('vertexShader').textContent,
-        fragmentShader: document.getElementById('fragmentShader').textContent,
+        // vertexShader: document.getElementById('vertexShader').textContent,
+        // fragmentShader: document.getElementById('fragmentShader').textContent,
     });
 
     const plane = new THREE.Mesh(planeGeometry, glsl_material);
@@ -107,8 +162,8 @@ window.onload = function() {
     camera.position.z = 5;
 
     function update() {
-    	// planeGeometry.vertices[0].y = Math.sin(new Date());
-    	// planeGeometry.verticesNeedUpdate = true;
+        // planeGeometry.vertices[0].y = Math.sin(new Date());
+        // planeGeometry.verticesNeedUpdate = true;
         glsl_material.uniforms.time.value = Math.sin(new Date());
         texture.needsUpdate = true;
 

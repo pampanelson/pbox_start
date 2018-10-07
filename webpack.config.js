@@ -1,8 +1,22 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const webpack = require('webpack');
 const path = require('path');
+const nodeModulesPath = path.resolve(__dirname, 'node_modules');
+const CleanWebpackPlugin = require("clean-webpack-plugin");
 
 module.exports = {
+    target: "web",
+
+    entry: {
+        home: ["./src/index.js"]
+    },
+
+    output: {
+        path: path.join(__dirname, "dist"),
+        filename: "[hash].js",
+        chunkFilename: "[id].bundle.js"
+    },
+
     module: {
         rules: [{
                 test: /\.js$/,
@@ -17,18 +31,20 @@ module.exports = {
                     loader: "html-loader",
                     options: { minimize: true }
                 }]
-            }
+            },
+            {
+                test: /\.glsl$/,
+                use: [{
+                    loader: "webpack-glsl-loader"
+                }]
+            },
 
         ]
     },
 
     devtool: 'inline-source-map',
+    // devtool: "cheap-source-map",
 
-    // not use yet 
-    // multi entry for webpack
-    // entry: {
-    //     dev_page:['./src/index.html','./src/index.js']
-    // },
 
     plugins: [
         new HtmlWebPackPlugin({
