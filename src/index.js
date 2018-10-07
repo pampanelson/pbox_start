@@ -6,9 +6,12 @@ import * as THREE from "three";
 // trick to import other modules and merge to  THREE
 window.THREE = THREE;
 
-import Stats from "three/examples/js/libs/stats.min.js"
+import Stats from "three/examples/js/libs/stats.min.js";
 var stats = new Stats();
 
+// user worker loader to load webworker from file
+import WsWorker from "worker-loader!./ws.worker.js";
+var wsWorker = new WsWorker();
 
 require("three/examples/js/controls/OrbitControls.js");
 
@@ -110,23 +113,8 @@ window.onload = function() {
     texture.magFilter = THREE.LinearFilter;
     texture.format = THREE.RGBFormat;
 
-    // // const planeGeometry = new THREE.PlaneGeometry(2, 2);
-    // const planeGeometry = new THREE.PlaneBufferGeometry(2,2); // TODO
-    // const glsl_material = new THREE.RawShaderMaterial({
-    //     uniforms: {
-    //         time: { type: "f", value: 1.0 },
-    //         texture0: { value: texture }
-    //     },
-    //     vertexShader: vertex,
-    //     fragmentShader: frag
-
-
-    // const plane = new THREE.Mesh(planeGeometry, glsl_material);
-    // scene.add(plane);
-
-
     // for shader toy glsl ====================
-    var uniforms1 = {
+    var uniforms_shadertoy = {
         resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
         iTime: {
             type: "f",
@@ -145,9 +133,9 @@ window.onload = function() {
         }
 
     };
-    var planeGeometry1 = new THREE.PlaneBufferGeometry(3.2, 1.8);
+    var planeGeometry1 = new THREE.PlaneBufferGeometry(16, 9);
     var material1 = new THREE.ShaderMaterial({
-        uniforms: uniforms1,
+        uniforms: uniforms_shadertoy,
         vertexShader: vertex1,
         fragmentShader: frag1
     });
@@ -158,7 +146,7 @@ window.onload = function() {
 
 
 
-    // uniforms1.iResolution.value = THREE.Vector2(window.innerWidth,window.innerHeight);
+    // uniforms_shadertoy.iResolution.value = THREE.Vector2(window.innerWidth,window.innerHeight);
 
 
     camera.position.z = 5;
@@ -169,7 +157,7 @@ window.onload = function() {
         // glsl_material.uniforms.time.value = Math.sin(new Date());
         texture.needsUpdate = true;
 
-        uniforms1.iTime.value += 0.04;
+        uniforms_shadertoy.iTime.value += 0.04;
         // planeGeometry1.attributes.position.array[1] = 0;
 
         planeGeometry1.verticesNeedUpdate = true;

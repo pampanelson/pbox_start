@@ -32,11 +32,17 @@ module.exports = {
                     options: { minimize: true }
                 }]
             },
+            // glsl loader
             {
                 test: /\.glsl$/,
                 use: [{
                     loader: "webpack-glsl-loader"
                 }]
+            },
+            // webworker loader
+            {
+                test: /\.worker\.js$/,
+                use: { loader: "worker-loader" }
             },
 
         ]
