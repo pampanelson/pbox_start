@@ -18,61 +18,6 @@
     <video id="video" autoplay loop crossOrigin="anonymous" webkit-playsinline style="display:none">
         <source src="static/sintel_1080p.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
     </video>
-    <script id="vertexShader" type="x-shader/x-vertex">
-        // Sets precision for float and int types
-			precision mediump float;
-			precision mediump int;
-      
-			uniform mat4 modelViewMatrix; // optional
-			uniform mat4 projectionMatrix; // optional
-      
-			attribute vec3 position;
-			attribute vec4 color;
-      
-      // Passed to fragment shader
-			varying vec3 vPosition;
-			varying vec4 vColor;
-      
-			void main()	{
-      	// Assign varyings for fragment shader
-				vPosition = position;
-				vColor = color;
-        
-        // some kind of boilerplate to set clipcoords
-				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-			}
-		</script>
-    <!-- Fragment shader
-      Built-in input variables: 
-        in vec4 gl_FragCoord;
-        in bool gl_FrontFacing;
-        in vec2 gl_PointCoord;
-      
-    -->
-    <script id="fragmentShader" type="x-shader/x-fragment">
-        precision mediump float;
-			precision mediump int;
-      
-			uniform float time;
-      
-      		varying vec2 vUv;
-			uniform sampler2D texture0;
-
-			varying vec3 vPosition;
-			varying vec4 vColor;
-      
-			void main()	{
-      	// Grab vertex color
-				//vec4 color = vec4( vColor );
-        // Alter red channel 
-				//color.r += sin( vPosition.x * 10.0 + time ) * 0.5;
-        
-            	vec4 color = texture2D( texture0 , vPosition.xy + vec2(0.5,0.5));
-            	//vec4 color = texture2D( texture0 , gl_FragCoord.xy);
-        // Set fragment color
-				gl_FragColor = color;
-			}
-		</script>
 </body>
 
 </html>

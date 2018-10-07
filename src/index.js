@@ -15,6 +15,9 @@ var vertex = glsl(vertexContent);
 var fragContent = require("./shaders/frag.glsl");
 var frag = glsl(fragContent);
 
+
+var vertex1 = glsl(require("./shaders/shadertoy_vert.glsl"));
+var frag1 = glsl(require("./shaders/shadertoy_frag.glsl"));
 // why import and const not working ? TODO ================
 // import * as glsl from "glslify";
 // const vertexContent = require("./shaders/vertex.glsl");
@@ -66,7 +69,7 @@ window.onload = function() {
         camera.updateProjectionMatrix();
 
         renderer.setSize(window.innerWidth, window.innerHeight);
-    }
+    };
 
     window.onresize = resize;
 
@@ -75,7 +78,7 @@ window.onload = function() {
 
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-
+    renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
@@ -99,32 +102,73 @@ window.onload = function() {
     texture.magFilter = THREE.LinearFilter;
     texture.format = THREE.RGBFormat;
 
-    const planeGeometry = new THREE.PlaneGeometry(2, 2);
+    // // const planeGeometry = new THREE.PlaneGeometry(2, 2);
     // const planeGeometry = new THREE.PlaneBufferGeometry(2,2); // TODO
-    const glsl_material = new THREE.RawShaderMaterial({
-        uniforms: {
-            time: { type: "f", value: 1.0 },
-            texture0: { value: texture }
-        },
-        vertexShader: vertex,
-        fragmentShader: frag
+    // const glsl_material = new THREE.RawShaderMaterial({
+    //     uniforms: {
+    //         time: { type: "f", value: 1.0 },
+    //         texture0: { value: texture }
+    //     },
+    //     vertexShader: vertex,
+    //     fragmentShader: frag
 
-        // vertexShader: document.getElementById("vertexShader").textContent,
-        // fragmentShader: document.getElementById("fragmentShader").textContent,
+
+    // const plane = new THREE.Mesh(planeGeometry, glsl_material);
+    // scene.add(plane);
+
+
+    // for shader toy glsl ====================
+    var uniforms1 = {
+        resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        iTime: {
+            type: "f",
+            value: 1.0
+        },
+        iResolution: {
+            type: "v2",
+            value: new THREE.Vector2(window.innerWidth, window.innerHeight)
+        },
+        iMouse: {
+            type: "v2",
+            value: new THREE.Vector2()
+        },
+        texture: {
+            value: texture
+        }
+
+    };
+    var planeGeometry1 = new THREE.PlaneBufferGeometry(2, 2);
+    var material1 = new THREE.ShaderMaterial({
+        uniforms: uniforms1,
+        vertexShader: vertex1,
+        fragmentShader: frag1
     });
 
-    const plane = new THREE.Mesh(planeGeometry, glsl_material);
-    scene.add(plane);
+
+    var mesh = new THREE.Mesh(planeGeometry1, material1);
+    scene.add(mesh);
+
+
+
+    // uniforms1.iResolution.value = THREE.Vector2(window.innerWidth,window.innerHeight);
+
 
     camera.position.z = 5;
 
     function update() {
         // planeGeometry.vertices[0].y = Math.sin(new Date());
         // planeGeometry.verticesNeedUpdate = true;
-        glsl_material.uniforms.time.value = Math.sin(new Date());
+        // glsl_material.uniforms.time.value = Math.sin(new Date());
         texture.needsUpdate = true;
 
+        uniforms1.iTime.value += 0.04;
+        // planeGeometry1.attributes.position.array[1] = 0;
+
+        planeGeometry1.verticesNeedUpdate = true;
+
     }
+
+
 
     const animate = function() {
         requestAnimationFrame(animate);
