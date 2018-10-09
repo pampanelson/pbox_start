@@ -46,6 +46,7 @@ var frag1 = glsl(require("./shaders/shadertoy_frag.glsl"));
 function makePlanes(id) {
     // for shader toy glsl ====================
     var uniforms = {
+        id: { type: "i", value: id },
         resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
         iTime: {
             type: "f",
@@ -64,7 +65,7 @@ function makePlanes(id) {
         }
 
     };
-    var planeGeometry = new THREE.PlaneBufferGeometry(16, 9);
+    var planeGeometry = new THREE.PlaneBufferGeometry(8, 9);
     var material = new THREE.ShaderMaterial({
         uniforms: uniforms,
         vertexShader: vertex1,
@@ -212,15 +213,13 @@ window.onload = function() {
 
     initKeyEvent();
 
-    makePlanes("planeA");
-    makePlanes("planeB");
+    makePlanes("1");
+    makePlanes("2");
 
-    globalData.planes[1].mesh.position.x += 14; 
+    globalData.planes[1].mesh.position.x -= 8;
+    // globalData.planes[1].mesh.position.z -= 0.1;
+
     // globalData.planes[0].mesh.rotation.y = Math.PI / 2;
-
-
-    console.log(globalData.planes[0].mesh.geometry.type);
-
     function update() {
         // planeGeometry.vertices[0].y = Math.sin(new Date());
         // planeGeometry.verticesNeedUpdate = true;
