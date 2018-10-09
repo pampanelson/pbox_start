@@ -130,6 +130,7 @@ function init() {
     document.body.appendChild(stats.dom);
 
 
+
 }
 
 function initScene() {
@@ -159,6 +160,8 @@ function initScene() {
     };
 
     window.onresize = resize;
+
+
 }
 
 function loadVideoTexture() {
@@ -210,10 +213,13 @@ window.onload = function() {
     initKeyEvent();
 
     makePlanes("planeA");
-    // makePlanes("planeB");
+    makePlanes("planeB");
 
+    globalData.planes[1].mesh.position.x += 14; 
     // globalData.planes[0].mesh.rotation.y = Math.PI / 2;
 
+
+    console.log(globalData.planes[0].mesh.geometry.type);
 
     function update() {
         // planeGeometry.vertices[0].y = Math.sin(new Date());
@@ -223,14 +229,14 @@ window.onload = function() {
 
         // uniforms.iTime.value += 0.04;
 
-        if (globalData.planes[0].mesh.geometry.attributes.position.array[0] == 0) {
-            globalData.planes[0].mesh.geometry.attributes.position.array[0] = -8;
+        // if (globalData.planes[0].mesh.geometry.attributes.position.array[0] == 0) {
+        //     globalData.planes[0].mesh.geometry.attributes.position.array[0] = -8;
 
-        } else {
-            globalData.planes[0].mesh.geometry.attributes.position.array[0] += 1;
-        }
+        // } else {
+        //     globalData.planes[0].mesh.geometry.attributes.position.array[0] += 1;
+        // }
 
-        globalData.planes[0].mesh.geometry.attributes.position.needsUpdate = true;
+        // globalData.planes[0].mesh.geometry.attributes.position.needsUpdate = true;
         // planeGeometry.verticesNeedUpdate = true;
 
     }
