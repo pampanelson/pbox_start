@@ -9,8 +9,8 @@ void main() {
     vec2 st = gl_FragCoord.xy/iResolution.xy;
     // gl_FragColor=vec4(st.x,st.y,1.0,1.0);
     // gl_FragColor=vec4(texture2D(texture,st * 0.5));
-    if(vUv.x >= 0.5){
+    // if(vUv.x >= 0.5){
     	gl_FragColor=vec4(texture2D(texture,vUv));
 
-    }
+    // }
 }

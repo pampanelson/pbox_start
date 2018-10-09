@@ -14,7 +14,10 @@ module.exports = {
     output: {
         path: path.join(__dirname, "dist"),
         filename: "[hash].js",
-        chunkFilename: "[id].bundle.js"
+        chunkFilename: "[id].bundle.js",
+        // temporary fix for import webworker ----- TODO ----------
+        globalObject: "(typeof self !== 'undefined' ? self : this)",
+        //globalObject: 'this', 
     },
 
     module: {

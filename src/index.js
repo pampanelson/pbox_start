@@ -3,17 +3,22 @@ import screenfull from "screenfull";
 import * as THREE from "three";
 // console.log(THREE);
 
+
 // trick to import other modules and merge to  THREE
 window.THREE = THREE;
 
+// import orbit controls
+require("three/examples/js/controls/OrbitControls.js");
+
+// import stats
 import Stats from "three/examples/js/libs/stats.min.js";
 var stats = new Stats();
 
-// user worker loader to load webworker from file
-import WsWorker from "worker-loader!./ws.worker.js";
-var wsWorker = new WsWorker();
 
-require("three/examples/js/controls/OrbitControls.js");
+// user worker loader to load webworker from file ============ TODO
+import WebsocketWorker from "./ws.worker.js";
+var wsWorker = new WebsocketWorker();
+
 
 var glsl = require("glslify");
 var vertexContent = require("./shaders/vertex.glsl");
@@ -22,6 +27,12 @@ var vertex = glsl(vertexContent);
 var fragContent = require("./shaders/frag.glsl");
 var frag = glsl(fragContent);
 
+
+// init global data
+var globalData = require("./data.js");
+// console.log(globalData);
+
+var Utils = require("./utils.js");
 
 var vertex1 = glsl(require("./shaders/shadertoy_vert.glsl"));
 var frag1 = glsl(require("./shaders/shadertoy_frag.glsl"));
@@ -32,8 +43,57 @@ var frag1 = glsl(require("./shaders/shadertoy_frag.glsl"));
 
 // const fragContent = require("./shaders/frag.glsl");
 // const frag = glsl(fragContent);
+function makePlanes(id) {
+    // for shader toy glsl ====================
+    var uniforms = {
+        resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        iTime: {
+            type: "f",
+            value: 1.0
+        },
+        iResolution: {
+            type: "v2",
+            value: new THREE.Vector2(window.innerWidth, window.innerHeight)
+        },
+        iMouse: {
+            type: "v2",
+            value: new THREE.Vector2()
+        },
+        texture: {
+            value: globalData.texture
+        }
+
+    };
+    var planeGeometry = new THREE.PlaneBufferGeometry(16, 9);
+    var material = new THREE.ShaderMaterial({
+        uniforms: uniforms,
+        vertexShader: vertex1,
+        fragmentShader: frag1
+    });
+
+
+    var mesh = new THREE.Mesh(planeGeometry, material);
+    var obj = { "id": id, "mesh": mesh };
+
+    globalData.scene.add(mesh);
+    globalData.planes.push(obj);
+    console.log("add plane:", obj);
+    // console.log(globalData.planes[0].mesh.geometry.attributes.position.array);    
+
+}
+
+// function setClientID(that) {
+//     // console.log(that);
+//     that.id =  window.location.href.split("=")[1];
+
+// }
+
+
 
 function init() {
+
+
+
     // init info div for debub
     var infoDiv = document.createElement("DIV");
     infoDiv.style.position = "absolute";
@@ -72,95 +132,106 @@ function init() {
 
 }
 
-window.onload = function() {
-    init();
+function initScene() {
+
+
+    globalData.scene = new THREE.Scene();
+    globalData.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+
+    globalData.renderer = new THREE.WebGLRenderer({ antialias: true });
+    globalData.renderer.setPixelRatio(window.devicePixelRatio);
+    globalData.renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(globalData.renderer.domElement);
+
+    globalData.controls = new THREE.OrbitControls(globalData.camera, globalData.renderer.domElement);
+
+    //controls.update() must be called after any manual changes to the camera"s transform
+    globalData.camera.position.set(0, 0, 10);
+    globalData.controls.update();
+
 
     const resize = function() {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
+        globalData.camera.aspect = window.innerWidth / window.innerHeight;
+        globalData.camera.updateProjectionMatrix();
 
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        globalData.renderer.setSize(window.innerWidth, window.innerHeight);
     };
 
     window.onresize = resize;
+}
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-    //controls.update() must be called after any manual changes to the camera"s transform
-    camera.position.set(0, 20, 100);
-    controls.update();
-
+function loadVideoTexture() {
     // and a cube for test
     const geometry = new THREE.BoxGeometry(0.1, 0.1, 1);
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
+    globalData.scene.add(cube);
 
     // prepare video texture for plane
     const video = document.getElementById("video");
-    const texture = new THREE.VideoTexture(video);
+    globalData.texture = new THREE.VideoTexture(video);
 
-    texture.minFilter = THREE.LinearFilter;
-    texture.magFilter = THREE.LinearFilter;
-    texture.format = THREE.RGBFormat;
+    globalData.texture.minFilter = THREE.LinearFilter;
+    globalData.texture.magFilter = THREE.LinearFilter;
+    globalData.texture.format = THREE.RGBFormat;
+}
 
-    // for shader toy glsl ====================
-    var uniforms_shadertoy = {
-        resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-        iTime: {
-            type: "f",
-            value: 1.0
-        },
-        iResolution: {
-            type: "v2",
-            value: new THREE.Vector2(window.innerWidth, window.innerHeight)
-        },
-        iMouse: {
-            type: "v2",
-            value: new THREE.Vector2()
-        },
-        texture: {
-            value: texture
+function initKeyEvent() {
+    window.document.onkeydown = function(ent) {
+        var event = ent || window.event;
+        switch (event.keyCode) {
+            case 37: //left
+                break;
+            case 38: //up
+                globalData.planes[0].mesh.position.x += 1;
+                break;
+            case 39: //right
+                break;
+            case 40: //down
+                globalData.planes[0].mesh.position.x -= 1;
+                break;
+
         }
 
     };
-    var planeGeometry1 = new THREE.PlaneBufferGeometry(16, 9);
-    var material1 = new THREE.ShaderMaterial({
-        uniforms: uniforms_shadertoy,
-        vertexShader: vertex1,
-        fragmentShader: frag1
-    });
+}
+
+window.onload = function() {
+    init();
+    Utils.setClientID(globalData);
+    console.log(globalData);
 
 
-    var mesh = new THREE.Mesh(planeGeometry1, material1);
-    scene.add(mesh);
+    initScene();
 
+    loadVideoTexture();
 
+    initKeyEvent();
 
-    // uniforms_shadertoy.iResolution.value = THREE.Vector2(window.innerWidth,window.innerHeight);
+    makePlanes("planeA");
+    // makePlanes("planeB");
 
+    // globalData.planes[0].mesh.rotation.y = Math.PI / 2;
 
-    camera.position.z = 5;
 
     function update() {
         // planeGeometry.vertices[0].y = Math.sin(new Date());
         // planeGeometry.verticesNeedUpdate = true;
         // glsl_material.uniforms.time.value = Math.sin(new Date());
-        texture.needsUpdate = true;
+        globalData.texture.needsUpdate = true;
 
-        uniforms_shadertoy.iTime.value += 0.04;
-        // planeGeometry1.attributes.position.array[1] = 0;
+        // uniforms.iTime.value += 0.04;
 
-        planeGeometry1.verticesNeedUpdate = true;
+        if (globalData.planes[0].mesh.geometry.attributes.position.array[0] == 0) {
+            globalData.planes[0].mesh.geometry.attributes.position.array[0] = -8;
+
+        } else {
+            globalData.planes[0].mesh.geometry.attributes.position.array[0] += 1;
+        }
+
+        globalData.planes[0].mesh.geometry.attributes.position.needsUpdate = true;
+        // planeGeometry.verticesNeedUpdate = true;
 
     }
 
@@ -170,8 +241,8 @@ window.onload = function() {
         requestAnimationFrame(animate);
         stats.begin();
         update();
-        controls.update();
-        renderer.render(scene, camera);
+        globalData.controls.update();
+        globalData.renderer.render(globalData.scene, globalData.camera);
         stats.end();
 
     };
